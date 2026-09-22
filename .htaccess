@@ -1,5 +1,6 @@
 Options -Indexes
 ServerSignature Off
+DirectoryIndex index.html
 
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
@@ -8,17 +9,10 @@ ServerSignature Off
   Header always set X-Frame-Options "SAMEORIGIN"
 </IfModule>
 
-<FilesMatch "(^\.|\.bak$|\.ini$|\.log$|\.sql$)">
+<FilesMatch "(^\\.|\\.bak$|\\.ini$|\\.log$|\\.sql$)">
   Require all denied
 </FilesMatch>
 
 RewriteEngine On
 RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^admin/overlays/?$ /admin/overlays.php [L,QSA]
-RewriteRule ^admin/images/?$ /admin/images.php [L,QSA]
-RewriteRule ^admin/?$ /admin/index.php [L,QSA]
-RewriteRule ^print/?$ /print.php [L,QSA]
-RewriteRule ^accessible/?$ /accessible.php [L,QSA]
-RewriteRule ^$ /index.php [L,QSA]
+RewriteRule ^$ /index.html [L]
