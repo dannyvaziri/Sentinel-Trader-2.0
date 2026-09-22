@@ -19,7 +19,9 @@ const readBody = async (req) => {
   try { return raw ? JSON.parse(raw) : {}; } catch { return {}; }
 };
 
-const liveConfigured = () => Boolean(process.env.ROBINHOOD_MCP_TOKEN);
+// A token's presence is not proof of an authenticated broker connection.
+// No live adapter or owner authentication has been implemented in this version.
+const liveConfigured = () => false;
 
 const riskGate = (body) => {
   const accountValue = Number(body.accountValue || 0);
@@ -47,6 +49,20 @@ const state = () => ({
 });
 
 const server = createServer(async (req, res) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('X-Frame-Options', 'DENY');
+  // Until owner authentication, durable audit and the broker adapter exist,
+  // reject every account and mutation route, independently of client inputs.
+  const requestPath = (req.url || '/').split('?')[0];
+  if (requestPath.startsWith('/api/') && requestPath !== '/api/health') {
+    return json(res, {
+      error: 'setup_incomplete',
+      message: 'Owner authentication, persistent audit storage and the official Robinhood server adapter are not implemented yet. Account access and trading are disabled.',
+      connected: false,
+      orderSubmitted: false
+    }, 503);
+  }
   const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
   if (req.method === "GET" && url.pathname === "/api/health") return json(res, { ok: true, service: "sentinel-trader-2", liveConfigured: liveConfigured() });
   if (req.method === "GET" && url.pathname === "/api/state") return json(res, state(), liveConfigured() ? 200 : 503);
@@ -69,7 +85,7 @@ const server = createServer(async (req, res) => {
   }
   if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/index.html")) {
     res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
-    return res.end(html);
+    return res.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sentinel Trader 2.0 — Setup required</title><style>body{font:17px/1.7 system-ui;background:#0b1422;color:#e7eef9;margin:0;padding:8vw}main{max-width:760px;margin:auto}h1{font-size:36px}p{color:#a9bbd1}a{color:#90e2c3}.card{padding:28px;border:1px solid #314057;border-radius:18px;background:#142135}</style></head><body><main><h1>Sentinel Trader 2.0</h1><section class="card"><h2>Private workspace setup in progress</h2><p>The Node server is running. Owner sign-in, durable audit storage and the official Robinhood connection still need implementation. No live account data is available.</p><p>All account and trading API routes are blocked on the server. No trades can be submitted.</p><p>Deployment source: GitHub / Sentinel-Trader-2.0 / main.</p><a href="https://robinhood.com/us/en/support/articles/agentic-trading/" rel="noreferrer">Official Robinhood setup information</a></section><p>Runtime: Sentinel 2.0 safety lock</p></main></body></html>');
   }
   return json(res, { error: "not_found" }, 404);
 });
