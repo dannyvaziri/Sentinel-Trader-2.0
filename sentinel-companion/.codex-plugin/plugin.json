@@ -1,0 +1,26 @@
+{
+  "name": "sentinel-trader",
+  "version": "1.0.0+codex.20260922074312",
+  "description": "Private Robinhood research, live account review, investment committee and approval companion for ChatGPT and Codex.",
+  "author": {
+    "name": "Daniel Vaziri"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Sentinel Trader",
+    "shortDescription": "Your private Robinhood trading companion.",
+    "longDescription": "Use your existing official Robinhood connection for live account reviews, research, committee proposals, conservative risk reports, explicit approvals, and a private activity journal. Advisory workflow controls; no autonomous execution or exported credentials.",
+    "developerName": "Daniel Vaziri",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "brandColor": "#63D6B2",
+    "defaultPrompt": [
+      "Open Sentinel and refresh my Agentic dashboard.",
+      "Run a Sentinel investment committee review.",
+      "Show Sentinel proposals, risk checks, and activity."
+    ]
+  }
+}

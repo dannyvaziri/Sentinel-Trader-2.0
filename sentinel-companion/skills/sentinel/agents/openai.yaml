@@ -1,0 +1,11 @@
+interface:
+  display_name: "Sentinel Trader"
+  short_description: "Robinhood research, proposals and approvals"
+  default_prompt: "Open Sentinel and refresh my Agentic dashboard."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "robinhood-trading"
+      description: "Use the existing official Robinhood connection; authorize separately if unavailable in this environment."
+      transport: "streamable_http"
+      url: "https://agent.robinhood.com/mcp/trading"
