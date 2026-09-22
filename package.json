@@ -1,0 +1,8 @@
+{
+  "name": "sentinel-trader-2",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node hostinger-server.mjs" },
+  "engines": { "node": ">=20" }
+}
